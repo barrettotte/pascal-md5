@@ -20,7 +20,8 @@ TODO:
 ## References
 
 - [Data Structures Using Pascal, 2nd ed. Tenenbaum,Augenstein (9780131966680)](https://isbnsearch.org/isbn/9780131966680)
-- [Free Pascal](https://www.freepascal.org/down/i386/linux.html)
+- [Free Pascal - Download](https://www.freepascal.org/down/i386/linux.html)
+- [Free Pascal - Basic Pascal Tutorial](https://wiki.freepascal.org/Basic_Pascal_Tutorial)
 - [MD5 Wiki](https://en.wikipedia.org/wiki/MD5#Algorithm)
 - [RFC-1321 - The MD5 Message-Digest Algorithm](https://www.rfc-editor.org/rfc/rfc1321.html)
 - [VS Code Pascal](https://github.com/alefragnani/vscode-language-pascal)
