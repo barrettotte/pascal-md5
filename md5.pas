@@ -8,13 +8,13 @@ type
     end;
 
 const
-    (* initial values of registers *)
+    (* Initial values of registers *)
     InitA: longword = $67452301;
     InitB: longword = $efcdab89;
     InitC: longword = $98badcfe;
     InitD: longword = $10325476;
 
-    (* per-round shift amounts *)
+    (* Per-round shift amounts *)
     Shifts: array of longword = (7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21);
 
     (* Binary integer parts of sines of integers (in radians) *)
@@ -37,7 +37,7 @@ const
         $f7537e82, $bd3af235, $2ad7d2bb, $eb86d391
     );
 
-    (* test cases from RFC-1321 *)
+    (* Test cases from RFC-1321 *)
     TestCases: array[0..6] of TestCase = (
         (Msg: ''; Hash: '0xd41d8cd98f00b204e9800998ecf8427e'),
         (Msg: 'a'; Hash: '0x0cc175b9c0f1b6a831c399e269772661'),
@@ -75,7 +75,6 @@ var
     padded: packed array of byte;
     buffer: packed array[0..15] of longword;
     hash: packed array[0..15] of byte;
-    hashStr: string;
 begin
     (* calculate padding *)
     msgBytes := Length(msg);
@@ -85,7 +84,8 @@ begin
     SetLength(padded, padLen);
 
     (* pad message *)
-    padded[0] := $80;
+    padded[0] := $80; (* append 1 bit => 0b10000000 *)
+
     for i := 0 to 7 do
     begin
         padded[padLen - 8 + i] := msgBits;
@@ -128,9 +128,6 @@ begin
         for j := 0 to 63 do
         begin
             round := j shr 4;
-            buffIdx := j;
-            f := 0;
-
             case round of
                 0:  (* Auxiliary function F *)
                     begin
@@ -154,7 +151,7 @@ begin
                     end;
             end;
 
-            tmp := b + RotateLeft32(a + f + buffer[buffIdx] + T[j], Shifts[(round * 4) or (j and 3)]);
+            tmp := b + RotateLeft32(a + f + buffer[buffIdx] + T[j], Shifts[(round shl 2) or (j and 3)]);
             a := d;
             d := c;
             c := b;
@@ -167,7 +164,7 @@ begin
         d := d + d0;
     end;
 
-    (* finalize hash *)
+    (* finalize hash bytes *)
     buffIdx := 0;
     tmp := 0;
     for i := 0 to 3 do
@@ -178,22 +175,21 @@ begin
             2: tmp := c;
             3: tmp := d;
         end;
+
         for j := 0 to 3 do
         begin
             hash[buffIdx] := tmp;
             buffIdx := buffIdx + 1;
-            tmp := tmp >> 8;
+            tmp := tmp shr 8;
         end;
     end;
 
     (* return hash as string *)
-    hashStr := '0x';
+    ComputeMD5 := '0x';
     for i := 0 to 15 do
     begin
-        hashStr := hashStr + Lowercase(IntToHex(hash[i], 2));
+        ComputeMD5 := ComputeMD5 + Lowercase(IntToHex(hash[i], 2));
     end;
-
-    ComputeMD5 := hashStr;
 end;
 
 (* main *)
@@ -201,17 +197,12 @@ var
     i: integer;
     actual: string;
 begin
-
-    Writeln('msg: "' + TestCases[2].Msg + '"');
-    Writeln('expected: ' + TestCases[2].Hash);
-    ComputeMD5(TestCases[2].Msg);
-    Writeln('');
-
+    (* Run all test test cases *)
     for i := 0 to (Length(TestCases) - 1) do
     begin
         Writeln('"' + TestCases[i].Msg + '"');
         actual := ComputeMD5(TestCases[i].Msg);
-        assert(CompareStr(actual, TestCases[i].Hash) = 0, 'Calculated hash does not match test case');
+        assert(CompareStr(actual, TestCases[i].Hash) = 0, 'Calculated hash does not match test case hash.');
         Writeln('  actual:   ' + actual);
         Writeln('  expected: ' + TestCases[i].Hash);
         Writeln('');
