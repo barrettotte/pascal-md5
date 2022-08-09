@@ -9,13 +9,10 @@ So why not learn a bit of Pascal and how the MD5 hashing function works.
 
 Free Pascal 3.2.2+ - `sudo apt-get -y install fpc`
 
-## Build
+## Commands
 
-- `make build`
-
-## Example
-
-TODO:
+- `make build` - builds binary
+- `make run` - builds and runs binary
 
 ## References
 
